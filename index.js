@@ -40,6 +40,11 @@ async function run() {
       const result = await categories.find({}).toArray();
       res.send(result);
     });
+    // AdvertisingProduct
+    app.get('/advertisingProduct', async(req , res)=>{
+      const result = await product.find({}).limit(3).toArray()
+      res.send(result)
+    })
     //my products get
     app.get("/myProducts", async (req, res) => {
       const email = req.query.email;
@@ -62,6 +67,19 @@ async function run() {
       const result = await bookings.find(query).toArray();
       res.send(result);
     });
+
+    // all buyers
+    app.get('/allBuyers' , async(req , res)=>{
+      const query= {type : "Buyer"}
+      const result = await user.find(query).toArray()
+      res.send(result)
+    })
+    // all Seller
+    app.get('/allSeller' , async(req , res)=>{
+      const query= {type : "Seller"}
+      const result = await user.find(query).toArray()
+      res.send(result)
+    })
 
 
 
@@ -97,7 +115,36 @@ async function run() {
       res.send(result);
     });
 
+    // delete order
+    app.delete("/Order/:id", async (req, res) => {
+      const ids = req.params.id;
+      const query = { _id: new ObjectId(ids)};
+      const result = await bookings.deleteOne(query);
+      res.send(result);
+    });
+    // delete users
+    app.delete("/users/:id", async (req, res) => {
+      const ids = req.params.id;
+      const query = { _id: new ObjectId(ids)};
+      const result = await user.deleteOne(query);
+      res.send(result);
+    });
 
+    //******************************************************************************************** */
+
+    // user update 
+    app.put('/update/:id' , async(req , res)=>{
+      const id = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const option = {upsert : true}
+      const updateUser ={
+        $set :{
+          verify : "verify"
+        }
+      }
+      const result = await user.updateOne(filter ,updateUser ,option )
+      res.send(result)
+    })
 
 
 
