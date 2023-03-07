@@ -5,6 +5,11 @@ require("dotenv").config();
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const path = process.env.PORT || 8000;
 
+const stripe = require("stripe")(
+  "sk_test_51MirOnSClmyxetKpclXUKECqRsMojqoabVQ0Rah9uoTyMJTErMxUYJTwGmDA40SndRFYwcsm643R1QrGKQ8PacJf00JyAWXhi6"
+);
+
+
 app.use(cors());
 app.use(express.json());
 
@@ -89,6 +94,18 @@ async function run() {
       const data = req.body;
       const result = await user.insertOne(data);
       res.send(result);
+      // const getuser = await user.find({}).toArray();
+      // for (let dat of getuser) {
+      //   if (dat?.email === data?.email) {
+      //     return res.send();
+      //   } else {
+      //     const result = await user.insertOne(data);
+      //     res.send(result);
+      //   }
+      // }
+      // const vry = {email : data.email};
+      // const result = await user.insertOne(data);
+      // res.send(result);
     });
     // products post my db
     app.post("/product", async (req, res) => {
@@ -145,10 +162,36 @@ async function run() {
       const result = await user.updateOne(filter ,updateUser ,option )
       res.send(result)
     })
+    // update payment
+    app.put('/booking/:id' , async(req , res)=>{
+      const id = req.params.id;
+      const filter = {_id : new ObjectId(id)}
+      const option = {upsert : true}
+      const updateUser ={
+        $set :{
+          payment : "paid"
+        }
+      }
+      const result = await bookings.updateOne(filter ,updateUser ,option )
+      res.send(result)
+    })
 
 
+// ************************************************************************************
+// payment sistema 
 
-
+app.post("/create-payment-intent", async (req, res) => {
+  const product = req.body;
+  const amount = parseInt(product.price) * 100;
+  const paymentIntent = await stripe.paymentIntents.create({
+    amount: amount,
+    currency: "inr",
+    payment_method_types: ["card"],
+  });
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+  });
+});
 
 
 
