@@ -33,6 +33,7 @@ async function run() {
     const user = database.collection("user");
     const product = database.collection("product");
     const bookings = database.collection("booking");
+    const report = database.collection("report");
 
 // ****************************************************************************
     app.get("/products/:name", async (req, res) => {
@@ -43,6 +44,11 @@ async function run() {
     });
     app.get("/categories", async (req, res) => {
       const result = await categories.find({}).toArray();
+      res.send(result);
+    });
+    //  report get
+    app.get("/report", async (req, res) => {
+      const result = await report.find({}).toArray();
       res.send(result);
     });
     // AdvertisingProduct
@@ -120,6 +126,13 @@ async function run() {
       const result = await bookings.insertOne(data);
       res.send(result);
     });
+    // reportadedItems post my db
+    app.post("/reportadedItems", async (req, res) => {
+      const data = req.body;
+      console.log(data);
+      const result = await report.insertOne(data);
+      res.send(result);
+    });
 
 
 
@@ -146,6 +159,13 @@ async function run() {
       const result = await user.deleteOne(query);
       res.send(result);
     });
+    // delete report
+    app.delete("/report/:id", async (req, res) => {
+      const ids = req.params.id;
+      const query = { _id: new ObjectId(ids)};
+      const result = await report.deleteOne(query);
+      res.send(result);
+    });
 
     //******************************************************************************************** */
 
@@ -160,6 +180,20 @@ async function run() {
         }
       }
       const result = await user.updateOne(filter ,updateUser ,option )
+      res.send(result)
+    })
+    // verify products  card  user
+    app.put('/userupdat' , async(req , res)=>{
+      const gmail = req.query.email;
+     
+      const filter = {email : gmail}
+      const option = {upsert : true}
+      const updateUser ={
+        $set :{
+          verify : "verify"
+        }
+      }
+      const result = await product.updateMany(filter ,updateUser ,option )
       res.send(result)
     })
     // update payment
