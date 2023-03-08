@@ -33,7 +33,7 @@ async function run() {
     const user = database.collection("user");
     const product = database.collection("product");
     const bookings = database.collection("booking");
-    const report = database.collection("report");
+    
 
 // ****************************************************************************
     app.get("/products/:name", async (req, res) => {
@@ -48,7 +48,7 @@ async function run() {
     });
     //  report get
     app.get("/report", async (req, res) => {
-      const result = await report.find({}).toArray();
+      const result = await product.find({report : "report"}).toArray();
       res.send(result);
     });
     // AdvertisingProduct
@@ -137,7 +137,14 @@ async function run() {
 
 
     // *****************************************************************************************
-    // delete post
+    // delete products admin
+    app.delete("/productsReport/:id", async (req, res) => {
+      const ids = req.params.id;
+      const query = { _id: new ObjectId(ids)};
+      const result = await product.deleteOne(query);
+      res.send(result);
+    });
+    // delete products seller
     app.delete("/products/:id", async (req, res) => {
       const ids = req.params.id;
       const query = { _id: new ObjectId(ids)};
@@ -191,6 +198,19 @@ async function run() {
       const updateUser ={
         $set :{
           verify : "verify"
+        }
+      }
+      const result = await product.updateMany(filter ,updateUser ,option )
+      res.send(result)
+    })
+    // report products  card  user
+    app.put('/postreop' , async(req , res)=>{
+      const ids = req.query.id;
+      const filter = {_id : new ObjectId(ids)}
+      const option = {upsert : true}
+      const updateUser ={
+        $set :{
+          report : "report"
         }
       }
       const result = await product.updateMany(filter ,updateUser ,option )
