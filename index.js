@@ -6,7 +6,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const path = process.env.PORT || 8000;
 
 const stripe = require("stripe")(
-  "sk_test_51MirOnSClmyxetKpclXUKECqRsMojqoabVQ0Rah9uoTyMJTErMxUYJTwGmDA40SndRFYwcsm643R1QrGKQ8PacJf00JyAWXhi6"
+  `${process.env.STRIPE_SK}`
 );
 
 
